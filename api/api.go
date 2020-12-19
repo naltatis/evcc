@@ -65,9 +65,14 @@ type Charger interface {
 	MaxCurrent(current int64) error
 }
 
+// ChargerEx provides milli-amp precision charger current control
+type ChargerEx interface {
+	MaxCurrentMillis(current float64) error
+}
+
 // Diagnosis is a helper interface that allows to dump diagnostic data to console
 type Diagnosis interface {
-	Diagnosis()
+	Diagnose()
 }
 
 // ChargeTimer provides current charge cycle duration

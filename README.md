@@ -149,7 +149,7 @@ The default *charge mode* upon start of EVCC is configured on the loadpoint. Mul
 - **Min + PV**: charge immediately with minimum configured current. Additionally use PV if available.
 - **PV**: use PV as available. May not charge the car if PV remains dark.
 
-In general, due to the minimum value of 5% for signalling the EV duty cycle, the charger cannot limit the current to below 6A. If the available power calculation demands a limit less than 6A, handling depends on the charge mode. In **PV** mode, the charger will be disabled until available PV power supports charging with at least 6A. In **Min + PV** mode, charging will continue at minimum current of 6A and charge current will be raised as PV power becomes available again.
+In general, due to the minimum value of 5% for signalling the EV duty cycle, the charger cannot limit the current to below 6A. If the available power calculation demands a limit less than 6A, handling depends on the charge mode. In **PV** mode, the charger will be disabled until available PV power supports charging with at least 6A. In **Min + PV** mode, charging will continue at minimum current of 6A and charge current will be raised as PV power becomes available again. **Min + PV** mode may behave different, when used with [HEMS (SHM)](#home-energy-management-system).
 
 ### Charger
 
@@ -225,7 +225,8 @@ Available vehicle remote interface implementations are:
 - `tesla`: Tesla (any model)
 - `renault`: Renault (Zoe, Kangoo ZE)
 - `porsche`: Porsche (Taycan)
-- `vw`: Volkswagen (eGolf, eUp, ID.3, ID.4)
+- `vw`: Volkswagen (eGolf, eUp)
+- `id`: Volkswagen (ID.3, ID.4)
 - `default`: default vehicle implementation using configurable [plugins](#plugins) for integrating any type of vehicle
 
 Configuration examples are documented at [andig/evcc-config#vehicles](https://github.com/andig/evcc-config#vehicles)
@@ -235,11 +236,13 @@ Configuration examples are documented at [andig/evcc-config#vehicles](https://gi
 EVCC can integrate itself with Home Energy Management Systems. At this time, the SMA Home Manager (SHM) is the only supported system. To enable add
 
 ```yaml
-hems: 
+hems:
   type: sma
 ```
 
-to the configuration. The EVCC loadpoints can then be added to the SHM configuration.
+to the configuration. The EVCC loadpoints can then be added to the SHM configuration. When SHM is used, the ratio of Grid to PV Power for the **Min+PV** mode can be adjusted in
+Sunny-Portal via the "Optional energy demand" slider. When the amount of configured PV is not available, charging suspends like in **PV** mode. So, pushing the slider completely
+to the left makes **Min+PV** behave as described above. Pushing completely to the right makes **Min+PV** mode behave like **PV** mode.
 
 ## Plugins
 
@@ -262,9 +265,20 @@ add:
 
 The `calc` plugin is useful e.g. to combine power values if import and export power are separate like with S0 meters. Use `scale` on one of the elements to implement a subtraction.
 
+### Javascript (read only)
+
+The `js` plugin is able to execute Javascript code from the `script` tag. Useful for quick prototyping:
+
+```yaml
+type: js
+script: |
+  var res = 500;
+  2 * res; // returns 1000
+```
+
 ### Modbus (read only)
 
-The `modbus` plugins is able to read data from any Modbus meter or SunSpec-compatible solar inverter. Many meters are already pre-configured (see [MBMD Supported Devices](https://github.com/volkszaehler/mbmd#supported-devices)).
+The `modbus` plugin is able to read data from any Modbus meter or SunSpec-compatible solar inverter. Many meters are already pre-configured (see [MBMD Supported Devices](https://github.com/volkszaehler/mbmd#supported-devices)).
 
 The meter configuration consists of the actual physical connection and the value to be read.
 

@@ -7,7 +7,7 @@ import (
 	"github.com/andig/evcc/api"
 	"github.com/andig/evcc/charger"
 	"github.com/andig/evcc/meter"
-	"github.com/andig/evcc/provider"
+	"github.com/andig/evcc/provider/mqtt"
 	"github.com/andig/evcc/push"
 	"github.com/andig/evcc/server"
 	"github.com/andig/evcc/vehicle"
@@ -16,9 +16,11 @@ import (
 type config struct {
 	URI        string
 	Log        string
+	Metrics    bool
+	Profile    bool
 	Levels     map[string]string
 	Interval   time.Duration
-	Mqtt       provider.MqttConfig
+	Mqtt       mqttConfig
 	Influx     server.InfluxConfig
 	HEMS       typedConfig
 	Messaging  messagingConfig
@@ -27,6 +29,11 @@ type config struct {
 	Vehicles   []qualifiedConfig
 	Site       map[string]interface{}
 	LoadPoints []map[string]interface{}
+}
+
+type mqttConfig struct {
+	mqtt.Config `mapstructure:",squash"`
+	Topic       string
 }
 
 type qualifiedConfig struct {

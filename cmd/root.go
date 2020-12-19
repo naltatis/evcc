@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"net/http"
+	_ "net/http/pprof" // pprof handler
 	"os"
 	"os/signal"
 	"syscall"
@@ -11,6 +13,8 @@ import (
 	"github.com/andig/evcc/server/updater"
 	"github.com/andig/evcc/util"
 	"github.com/andig/evcc/util/pipe"
+	"github.com/gorilla/mux"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -73,6 +77,20 @@ func init() {
 		"Update interval",
 	)
 	bind(rootCmd, "interval")
+
+	rootCmd.PersistentFlags().Bool(
+		"metrics",
+		false,
+		"Expose metrics",
+	)
+	bind(rootCmd, "metrics")
+
+	rootCmd.PersistentFlags().Bool(
+		"profile",
+		false,
+		"Expose pprof profiles",
+	)
+	bind(rootCmd, "profile")
 }
 
 // initConfig reads in config file and ENV variables if set
@@ -161,6 +179,17 @@ func run(cmd *cobra.Command, args []string) {
 	// create webserver
 	socketHub := server.NewSocketHub()
 	httpd := server.NewHTTPd(uri, site, socketHub, cache)
+
+	// metrics
+	if viper.GetBool("metrics") {
+		httpd.Handle("/metrics", promhttp.Handler())
+	}
+
+	// pprof
+	if viper.GetBool("profile") {
+		router := httpd.Handler.(*mux.Router)
+		router.PathPrefix("/debug/").Handler(http.DefaultServeMux)
+	}
 
 	// start HEMS server
 	if conf.HEMS.Type != "" {

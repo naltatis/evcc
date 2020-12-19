@@ -51,7 +51,9 @@ func NewBMWFromConfig(other map[string]interface{}) (api.Vehicle, error) {
 		Capacity            int64
 		User, Password, VIN string
 		Cache               time.Duration
-	}{}
+	}{
+		Cache: interval,
+	}
 
 	if err := util.DecodeOther(other, &cc); err != nil {
 		return nil, err
@@ -106,6 +108,7 @@ func (v *BMW) login(user, password string) error {
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 
 	query, err := url.ParseQuery(resp.Header.Get("Location"))
 	if err != nil {
