@@ -46,7 +46,7 @@ type Tesla struct {
 
 type teslaConfig struct {
 	URI   string `validate:"required"`
-	Usage string `validate:"required,oneof=grid pv battery" ui:"de=Zählerverwendung,hide"`
+	Usage string `validate:"required,oneof=grid pv battery" ui:"de=Zählerverwendung"` // TODO hide
 }
 
 func init() {

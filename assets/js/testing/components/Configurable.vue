@@ -1,17 +1,21 @@
 <template>
-	<div class="row">
+	<div class="form-row">
 		<div class="col">
 			<!-- <h4 class="my-4">{{ label }} ({{ type }})</h4> -->
 			<form>
 				<Field
 					v-for="(field, idx) in fields"
 					v-bind="field"
-					:key="type + idx"
-					:ref="type + idx"
+					:key="label + idx"
+					:ref="label + idx"
+					:plugins="plugins"
 					v-on:updated="clearStatus"
 				></Field>
-				<button type="submit" class="btn btn-primary btn-small" @click="test">Test</button
-				>{{ this.error }}
+
+				<button type="submit" class="btn btn-primary btn-small" @click="test">Test</button>
+
+				{{ this.error }}
+
 				<ul v-if="Object.keys(result).length">
 					<li v-for="(val, idx) in result" :key="idx">
 						{{ idx }}: <span v-if="val.error">{{ val.error }}</span
@@ -28,18 +32,19 @@ import axios from "axios";
 import Field from "./Field";
 
 export default {
-	name: "Element",
+	name: "Configurable",
 	components: { Field },
 	props: {
 		configclass: String,
 		type: String,
 		label: String,
 		fields: Array,
+		plugins: Array,
 	},
 	data: function () {
 		return {
-			error: null,
-			result: Object,
+			error: "",
+			result: {},
 		};
 	},
 	methods: {
@@ -48,14 +53,9 @@ export default {
 				Type: this.type,
 			};
 
-			console.log("element");
-			console.log(this);
-			console.log(this.$refs);
-
 			for (var idx in this.$refs) {
 				if (this.$refs[idx].length) {
 					let field = this.$refs[idx][0];
-					console.log(field);
 					let val = field.values();
 					if (val !== undefined) {
 						json[field.name] = val;
@@ -63,28 +63,25 @@ export default {
 				}
 			}
 
-			console.log(json);
 			return json;
 		},
 		test: async function (e) {
 			e.preventDefault();
+			this.clearStatus();
 
 			const json = this.values();
 			try {
 				let res = await axios.post("config/test/" + this.configclass, json);
 				this.result = res.data;
-				this.error = null;
 			} catch (e) {
-				console.log(e);
 				if (e.response) {
 					this.error = e.response.data;
 				}
 			}
 		},
 		clearStatus: function () {
-			console.log("clearStatus");
-			this.result = null;
-			this.error = null;
+			this.result = {};
+			this.error = "";
 		},
 	},
 };
