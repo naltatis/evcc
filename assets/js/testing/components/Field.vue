@@ -1,17 +1,44 @@
 <template>
 	<div>
-		<div v-if="this.type == 'struct'">
-			<h5>{{ label }}</h5>
-			<div class="ml-3" v-if="this.type == 'struct'">
+		<div class="form-row" v-if="type == 'struct'">
+			<div class="col-4">{{ label }}</div>
+
+			<div class="col-8">
 				<Field
-					v-for="(f, idx) in this.children"
+					v-for="(f, idx) in children"
 					v-bind="f"
-					:key="type + idx"
-					:ref="type + idx"
+					:key="name + idx"
+					:ref="name + idx"
 				></Field>
 			</div>
 		</div>
-		<div class="mb-3 row" v-else>
+		<div class="form-row" v-else-if="type == 'plugin'">
+			<div class="col-4 font-weight-bold">{{ label }}</div>
+			<div class="col-8">
+				<select class="form-control" v-model="plugin">
+					<option value="">- bitte wählen -</option>
+					<option
+						v-for="(cfg, idx) in plugins"
+						:key="idx"
+						:value="idx"
+						:selected="idx == plugin"
+					>
+						{{ cfg.label }}
+					</option>
+				</select>
+			</div>
+
+			<div class="col-4"></div>
+			<div class="col-8">
+				<Configurable
+					v-bind="plugins[plugin]"
+					:configclass="'plugin'"
+					:plugins="plugins"
+					:ref="name"
+				></Configurable>
+			</div>
+		</div>
+		<div class="form-row" v-else>
 			<label :for="this.name" class="col-sm-4 col-form-label">{{ label }}</label>
 
 			<div class="col-sm-8">
@@ -23,7 +50,7 @@
 					v-if="isEnum"
 				>
 					<option v-if="!required" value="">- bitte wählen -</option>
-					<option v-for="(e, idx) in enums" :key="type + idx" :value="e">{{ e }}</option>
+					<option v-for="(e, idx) in enums" :key="idx" :value="e">{{ e }}</option>
 				</select>
 				<input
 					class="form-control"
@@ -31,7 +58,7 @@
 					:name="this.name"
 					:value="this.default"
 					v-model="checked"
-					v-if="isBool"
+					v-else-if="isBool"
 				/>
 				<input
 					class="form-control"
@@ -49,24 +76,27 @@
 <script>
 export default {
 	name: "Field",
+	components: { Configurable: () => import("./Configurable") },
 	props: {
 		name: String,
 		label: String,
 		type: String,
+		masked: Boolean,
 		required: Boolean,
 		default: [String, Number],
 		enum: Array,
 		children: Array,
+		plugins: Array,
 	},
 	data: function () {
 		return {
 			value: this.default,
 			checked: false,
+			plugin: 0,
 		};
 	},
 	watch: {
 		value: function () {
-			console.log("watch value");
 			this.$emit("updated");
 		},
 	},
@@ -83,6 +113,9 @@ export default {
 		inputType: function () {
 			switch (this.type) {
 				case "string":
+					if (this.masked) {
+						return "password";
+					}
 					return "text";
 				case "bool":
 					return "checkbox";
@@ -93,7 +126,7 @@ export default {
 	},
 	methods: {
 		values: function () {
-			if (this.type != "struct") {
+			if (this.type !== "struct") {
 				if (this.isBool) {
 					return this.checked;
 				}
