@@ -10,6 +10,8 @@ import (
 	"github.com/andig/evcc/util/request"
 )
 
+// https://www.nrgkick.com/wp-content/uploads/2019/08/20190814_API-Dokumentation_04.pdf
+
 const (
 	nrgSettings     = "settings"
 	nrgMeasurements = "measurements"
@@ -137,11 +139,15 @@ func (nrg *NRGKickConnect) Status() (api.ChargeStatus, error) {
 func (nrg *NRGKickConnect) Enabled() (bool, error) {
 	var res NRGSettings
 	err := nrg.GetJSON(nrg.apiURL(nrgSettings), &res)
-	if err != nil && res.Message != "" {
-		err = errors.New(res.Message)
+	if err != nil {
+		if res.Message != "" {
+			err = errors.New(res.Message)
+		}
+
+		return false, err
 	}
 
-	return *res.Values.ChargingStatus.Charging, err
+	return *res.Values.ChargingStatus.Charging, nil
 }
 
 // Enable implements the Charger.Enable interface
