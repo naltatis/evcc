@@ -3,6 +3,7 @@ package meter
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/andig/evcc/api"
 	"github.com/andig/evcc/util"
@@ -26,13 +27,14 @@ type modbusConfig = struct {
 	Model           string `ui:"de=Zählertyp"`
 	modbus.Settings `mapstructure:",squash"`
 	Readings        `mapstructure:",squash"`
+	Timeout         time.Duration
 }
 
 // Readings is the set of supported meter readings
 type Readings = struct {
 	Power  string `validate:"required" ui:"de=Messwert Leistung (W)"`
-	Energy string `ui:"de=Messwert Zählerstand (kWh, nur Ladezähler)"`
-	SoC    string `ui:"de=Messwert Ladezustand (%, nur Batterien)"`
+	Energy string `ui:"de=Messwert Zählerstand (kWh) (nur Ladezähler)"`
+	SoC    string `ui:"de=Messwert Ladezustand (%) (nur Batterien)"`
 }
 
 func modbusDefaults() modbusConfig {
@@ -43,7 +45,6 @@ func modbusDefaults() modbusConfig {
 	}
 }
 
-// TODO clarify sunspec model id
 func init() {
 	registry.Add("modbus", "ModBus", NewModbusFromConfig, nil)
 
@@ -51,6 +52,7 @@ func init() {
 	registry.Add("modbus-tcp", "ModBus Wechselrichter (TCP)", NewModbusFromConfig, struct {
 		modbus.SettingsTCPModel
 		Readings
+		Timeout time.Duration
 	}{
 		SettingsTCPModel: modbus.SettingsTCPModel{
 			SettingsTCP: modbus.SettingsTCP{
@@ -66,6 +68,7 @@ func init() {
 	registry.Add("modbus-rtu-tcp", "ModBus Zähler (Seriell<->TCP)", NewModbusFromConfig, struct {
 		modbus.SettingsRTUTCPModel
 		Readings
+		Timeout time.Duration
 	}{
 		SettingsRTUTCPModel: modbus.SettingsRTUTCPModel{
 			SettingsRTUTCP: modbus.SettingsRTUTCP{
@@ -118,6 +121,11 @@ func NewModbusFromConfig(other map[string]interface{}) (api.Meter, error) {
 	conn, err := modbus.NewConnection(cc.URI, cc.Device, cc.Comset, cc.Baudrate, *cc.RTU, cc.ID)
 	if err != nil {
 		return nil, err
+	}
+
+	// set non-default timeout
+	if cc.Timeout > 0 {
+		conn.Timeout(cc.Timeout)
 	}
 
 	conn.Logger(log.TRACE)

@@ -16,7 +16,7 @@
 			<div class="col-4 font-weight-bold">{{ label }}</div>
 			<div class="col-8">
 				<select class="form-control" v-model="plugin">
-					<option value="">- bitte wählen -</option>
+					<option v-if="!required" value="">- bitte wählen -</option>
 					<option
 						v-for="(cfg, idx) in plugins"
 						:key="idx"
@@ -32,7 +32,7 @@
 			<div class="col-8">
 				<Configurable
 					v-bind="plugins[plugin]"
-					:configclass="'plugin'"
+					:klass="'plugin'"
 					:plugins="plugins"
 					:ref="name"
 				></Configurable>
@@ -52,6 +52,7 @@
 					<option v-if="!required" value="">- bitte wählen -</option>
 					<option v-for="(e, idx) in enums" :key="idx" :value="e">{{ e }}</option>
 				</select>
+				<textarea class="form-control" rows="5" v-else-if="this.type == 'text'"></textarea>
 				<input
 					class="form-control"
 					:type="this.inputType"
@@ -74,8 +75,11 @@
 </template>
 
 <script>
+// import Configurable from "./Configurable";
+
 export default {
 	name: "Field",
+	// components: { Configurable },
 	components: { Configurable: () => import("./Configurable") },
 	props: {
 		name: String,
@@ -117,6 +121,16 @@ export default {
 						return "password";
 					}
 					return "text";
+				case ("int",
+				"int32",
+				"int64",
+				"uint",
+				"uint32",
+				"uint64",
+				"float32",
+				"float64",
+				"duration"):
+					return "number";
 				case "bool":
 					return "checkbox";
 				default:
@@ -127,10 +141,7 @@ export default {
 	methods: {
 		values: function () {
 			if (this.type !== "struct") {
-				if (this.isBool) {
-					return this.checked;
-				}
-				return this.value;
+				return this.isBool ? this.checked : this.value;
 			}
 
 			let json = {};
