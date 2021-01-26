@@ -9,7 +9,10 @@ import (
 )
 
 const (
-	pluginType = "plugin"
+	typeDuration = "duration"
+	typePlugin   = "plugin"
+	typePassword = "password"
+	typeText     = "text"
 )
 
 // description is the Fieldmetadata container describing a single type
@@ -21,15 +24,15 @@ type description struct {
 
 // FieldMetadata is the meta data format for the type description
 type FieldMetadata struct {
-	Name     string          `json:"name"`
-	Type     string          `json:"type"`
-	Required bool            `json:"required"`
-	Hidden   bool            `json:"hidden"`
-	Masked   bool            `json:"masked"`
-	Label    string          `json:"label"`
-	Enum     []interface{}   `json:"enum,omitempty"`
-	Default  interface{}     `json:"default,omitempty"`
-	Children []FieldMetadata `json:"children,omitempty"`
+	Name      string          `json:"name"`
+	Type      string          `json:"type"`
+	SliceType string          `json:"slicetype,omitempty"`
+	Required  bool            `json:"required,omitempty"`
+	Hidden    bool            `json:"hidden,omitempty"`
+	Label     string          `json:"label,omitempty"`
+	Enum      []interface{}   `json:"enum,omitempty"`
+	Default   interface{}     `json:"default,omitempty"`
+	Children  []FieldMetadata `json:"children,omitempty"`
 }
 
 // tagKey returns tag key's value or key name if value is empty
@@ -78,15 +81,22 @@ func label(f *structs.Field) string {
 
 // kind is the exported data type
 func kind(f *structs.Field) string {
-	switch val := f.Value().(type) {
-	case time.Duration:
-		return "duration"
-	default:
-		// plugin config
-		if strings.HasSuffix(reflect.TypeOf(val).String(), "provider.Config") {
-			return pluginType
-		}
+	val := f.Value()
 
+	switch {
+	case reflect.TypeOf(val) == reflect.TypeOf(time.Duration(0)):
+		return typeDuration
+
+	case f.Kind() == reflect.Struct && reflect.TypeOf(val).String() == "provider.Config":
+		return typePlugin
+
+	case hasTagKey(f, "ui", "mask"):
+		return typePassword
+
+	case hasTagKey(f, "ui", "text"):
+		return typeText
+
+	default:
 		return f.Kind().String()
 	}
 }
@@ -136,7 +146,6 @@ func annotate(s interface{}, opt ...bool) (ds []FieldMetadata) {
 			Type:     kind(f),
 			Required: hasTagKey(f, "validate", "required"),
 			Hidden:   hasTagKey(f, "ui", "hide"),
-			Masked:   hasTagKey(f, "ui", "mask"),
 		}
 
 		if !d.Hidden {
@@ -150,7 +159,7 @@ func annotate(s interface{}, opt ...bool) (ds []FieldMetadata) {
 		}
 
 		// add default values if not masked
-		if !f.IsZero() && !d.Masked {
+		if !f.IsZero() && d.Type != typePassword {
 			d.Default = value(f)
 		}
 
@@ -159,14 +168,22 @@ func annotate(s interface{}, opt ...bool) (ds []FieldMetadata) {
 			// ignore children
 		case reflect.Interface, reflect.Func:
 			continue
+		case reflect.Slice:
+			t := reflect.TypeOf(f.Value()).Elem()
+			if t.String() != "provider.Config" {
+				continue
+			}
+			d.SliceType = typePlugin
 		case reflect.Struct:
-			if flat || d.Type == pluginType {
+			if flat {
 				// don't describe the field
 				continue
 			}
 
-			d.Default = nil // no default for structs
-			d.Children = annotate(f.Value())
+			if d.Type != typePlugin {
+				d.Default = nil // no default for structs
+				d.Children = annotate(f.Value())
+			}
 		}
 
 		ds = append(ds, d)

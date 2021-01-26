@@ -65,7 +65,8 @@ type MobileConnect struct {
 }
 
 type mccConfig struct {
-	URI, Password string `validate:"required"`
+	URI      string `validate:"required"`
+	Password string `validate:"required" ui:",mask"`
 }
 
 func init() {

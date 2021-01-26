@@ -98,7 +98,7 @@ func NewNRGKickConnect(uri, mac, password string) (*NRGKickConnect, error) {
 	nrg := &NRGKickConnect{
 		log:      log,
 		Helper:   request.NewHelper(log),
-		uri:      uri,
+		uri:      util.DefaultScheme(uri, "http"),
 		mac:      mac,
 		password: password,
 	}
