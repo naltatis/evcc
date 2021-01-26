@@ -15,7 +15,7 @@
 			<p v-else class="card-text pb-3">
 				<slot name="summary"></slot>
 				<span class="text-success" v-if="isConfigured"> ✓</span>
-				<span class="text-danger" v-if="isRequired">(Konfiguration erforderlich)</span>
+				<span class="text-danger" v-if="isRequired">(nicht konfiguriert)</span>
 			</p>
 		</transition>
 	</div>

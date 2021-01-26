@@ -1,7 +1,7 @@
 <template>
 	<form @submit.prevent="submit">
 		<div class="form-group">
-			<label for="wechselrichter">Messgerät</label>
+			<label for="wechselrichter">{{ name }}</label>
 			<select class="custom-select" id="wechselrichter" v-model="selectedMeter">
 				<option :value="meter.type" :key="meter.type" v-for="meter in meters">
 					{{ meter.label }}
@@ -84,6 +84,9 @@ export default {
 		};
 	},
 	props: {
+		name: {
+			type: String,
+		},
 		meters: {
 			type: Array,
 		},

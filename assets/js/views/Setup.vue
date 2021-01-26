@@ -9,7 +9,7 @@
 			<Site :meters="meters" />
 			<Vehicles :vehicles="vehicles" />
 		</div>
-		<Loadpoints :chargers="chargers" />
+		<Loadpoints :charger-types="chargerTypes" />
 
 		<h2 class="my-4">Weitere Einstellungen</h2>
 		<div class="card-deck">
@@ -35,14 +35,14 @@ export default {
 		return {
 			meters: [],
 			vehicles: [],
-			chargers: [],
+			chargerTypes: [],
 		};
 	},
 	mounted: async function () {
 		try {
 			this.meters = (await axios.get("/config/types/meter")).data;
 			this.vehicles = (await axios.get("/config/types/vehicle")).data;
-			this.chargers = (await axios.get("/config/types/charger")).data;
+			this.chargerTypes = (await axios.get("/config/types/charger")).data;
 		} catch (e) {
 			window.toasts.error(e);
 		}

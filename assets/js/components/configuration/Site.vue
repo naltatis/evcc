@@ -10,7 +10,9 @@
 			>
 				<template #status><h5>0,00 kW</h5></template>
 				<template #summary></template>
-				<template #form><Form :meters="metersFor('grid')" usage="grid" /></template>
+				<template #form>
+					<Form name="Messgerät" :meters="metersFor('grid')" usage="grid" />
+				</template>
 			</CardEntry>
 			<CardEntry
 				name="Erzeuger / Wechselrichter"
@@ -21,7 +23,9 @@
 			>
 				<template #status><h5 class="text-success">5,42 kW</h5></template>
 				<template #summary>SMA</template>
-				<template #form><Form :meters="metersFor('pv')" usage="pv" /></template>
+				<template #form>
+					<Form name="Messgerät" :meters="metersFor('pv')" usage="pv" />
+				</template>
 			</CardEntry>
 			<CardEntry
 				name="Hausbatterie"
@@ -35,7 +39,9 @@
 					<small class="text-muted">76%</small>
 				</template>
 				<template #summary>BYD B-BOX PREMIUM 9.0kWh</template>
-				<template #form><Form :meters="metersFor('battery')" usage="battery" /></template>
+				<template #form>
+					<Form name="Messgerät" :meters="metersFor('battery')" usage="battery" />
+				</template>
 			</CardEntry>
 		</template>
 	</Card>
