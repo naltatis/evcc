@@ -15,7 +15,7 @@
 			</div>
 		</div>
 
-		<FieldSet v-bind="types[type]" :klass="klass" :plugins="plugins"></FieldSet>
+		<FieldSet v-bind="types[type]" :klass="klass" :plugins="plugins" ref="fields"></FieldSet>
 	</div>
 </template>
 
@@ -37,25 +37,13 @@ export default {
 		};
 	},
 	watch: {
-		plugins: function () {
-			if (this.klass == "plugin") {
-				this.types = this.plugins;
-				return;
-			}
-		},
-	},
-	computed: {
-		list: function () {
-			return this.types.map((v) => {
-				return v.type;
-			});
+		type: function () {
+			this.$refs.fields.clearStatus();
 		},
 	},
 	mounted: async function () {
 		try {
-			if (this.klass != "plugin") {
-				this.types = (await axios.get("/config/types/" + this.klass)).data;
-			}
+			this.types = (await axios.get("/config/types/" + this.klass)).data;
 		} catch (e) {
 			window.toasts.error(e);
 		}
