@@ -1,7 +1,16 @@
 <template>
 	<input type="hidden" v-if="inputType === 'hidden'" :name="name" :value="`${this.default}`" />
 	<div class="form-group" v-else>
-		<label :for="name">
+		<div class="custom-control custom-switch mb-2" v-if="inputType === 'subform' && !required">
+			<input
+				type="checkbox"
+				class="custom-control-input"
+				v-model="subformEnabled"
+				:id="name"
+			/>
+			<label class="custom-control-label" :for="name">{{ label }}</label>
+		</div>
+		<label :for="name" v-else>
 			{{ label }}
 			<small class="text-muted" v-if="!required"> (optional) </small>
 		</label>
@@ -9,8 +18,7 @@
 			type="text"
 			v-if="inputType === 'text'"
 			class="form-control"
-			:placeholder="this.default"
-			value=""
+			:value="this.default"
 			:name="name"
 			:id="name"
 		/>
@@ -27,17 +35,64 @@
 			v-if="inputType === 'number'"
 			class="form-control"
 			style="width: 50%"
-			:placeholder="`${this.default}`"
+			:value="this.default"
 			:name="name"
-			value=""
 			:id="name"
 		/>
+		<div class="input-group" v-if="inputType === 'duration'" style="width: 8em">
+			<input
+				type="number"
+				class="form-control"
+				:name="name"
+				:id="name"
+				:value="this.default"
+			/>
+			<div class="input-group-append">
+				<span class="input-group-text">s</span>
+			</div>
+		</div>
+		<div
+			class="btn-group btn-group-toggle"
+			data-toggle="buttons"
+			style="display: block"
+			v-if="inputType === 'yes_no'"
+		>
+			<label class="btn btn-outline-secondary" :class="{ active: this.default === 'true' }">
+				<input
+					type="radio"
+					:name="name"
+					:id="name"
+					value="true"
+					:checked="this.default === 'true'"
+				/>
+				ja
+			</label>
+			<label class="btn btn-outline-secondary" :class="{ active: this.default !== 'true' }">
+				<input type="radio" value="false" :name="name" :checked="this.default !== 'true'" />
+				nein
+			</label>
+		</div>
+		<div v-if="inputType === 'plugin'">
+			<button type="button" class="btn btn-outline-secondary">Plugin konfigurieren</button>
+		</div>
 		<select v-if="inputType === 'select'" class="custom-select" :name="name" :id="name">
 			<option v-if="!required" value="">- bitte wählen -</option>
 			<option :key="value" :value="value" v-for="value in this.enum">
 				{{ value }}
 			</option>
 		</select>
+		<div
+			v-if="inputType === 'subform'"
+			class="ml-1 pl-3 border-left"
+			v-show="subformEnabled || required"
+		>
+			<FormField
+				v-for="formField in this.children"
+				:key="formField.name"
+				v-bind="formField"
+				:name="`${name}.${formField.name}`"
+			/>
+		</div>
 	</div>
 </template>
 
@@ -52,14 +107,21 @@ export default {
 		masked: Boolean,
 		label: String,
 		enum: Array,
-		default: String,
+		children: Array,
+		default: [String, Number],
+	},
+	data: function () {
+		return { subformEnabled: false };
 	},
 	computed: {
 		inputType: function () {
-			console.log(this);
 			if (this.hidden) return "hidden";
 			if (this.enum) return "select";
 			if (this.masked) return "password";
+			if (this.type === "struct") return "subform";
+			if (this.type === "duration") return "duration";
+			if (this.type === "bool") return "yes_no";
+			if (this.type === "plugin") return "plugin";
 			if (this.type === "int" || this.type === "uint8") return "number";
 			return "text";
 		},

@@ -87,11 +87,14 @@ export default {
 		name: {
 			type: String,
 		},
+		testEndpoint: {
+			type: String,
+		},
+		saveEndpoint: {
+			type: String,
+		},
 		meters: {
 			type: Array,
-		},
-		usage: {
-			type: String,
 		},
 	},
 	computed: {
@@ -100,15 +103,16 @@ export default {
 			return meter ? meter.fields : [];
 		},
 		requiredFormFields: function () {
-			return this.formFields.filter((f) => f.required || f.hidden);
+			return this.formFields; //.filter((f) => f.required || f.hidden);
 		},
 		optionalFormFields: function () {
-			return this.formFields.filter((field) => !this.requiredFormFields.includes(field));
+			return []; //this.formFields.filter((field) => !this.requiredFormFields.includes(field));
 		},
 	},
 	methods: {
 		formToJson: function (form) {
 			const formData = new FormData(form);
+			console.log(formData);
 			var result = {};
 			formData.forEach((value, key) => (result[key] = value));
 			return result;
@@ -132,7 +136,7 @@ export default {
 			this.testPending = true;
 			this.testRequestCancelToken = axios.CancelToken.source();
 			try {
-				const response = await axios.post("/config/test/meter", data, {
+				const response = await axios.post(this.testEndpoint, data, {
 					validateStatus: undefined,
 					cancelToken: this.testRequestCancelToken.token,
 				});
@@ -148,7 +152,7 @@ export default {
 		},
 		save: async function (data) {
 			try {
-				await axios.post(`/config/meter/${this.usage}`, data);
+				await axios.post(this.saveEndpoint, data);
 				this.tested = false;
 			} catch (e) {
 				console.error(e);

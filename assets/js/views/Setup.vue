@@ -7,7 +7,7 @@
 		</div>
 		<div class="card-deck mt-4 mb-5">
 			<Site :meters="meters" />
-			<Vehicles :vehicles="vehicles" />
+			<Vehicles :vehicle-types="vehicleTypes" />
 		</div>
 		<Loadpoints :charger-types="chargerTypes" />
 
@@ -34,14 +34,14 @@ export default {
 	data: function () {
 		return {
 			meters: [],
-			vehicles: [],
+			vehicleTypes: [],
 			chargerTypes: [],
 		};
 	},
 	mounted: async function () {
 		try {
 			this.meters = (await axios.get("/config/types/meter")).data;
-			this.vehicles = (await axios.get("/config/types/vehicle")).data;
+			this.vehicleTypes = (await axios.get("/config/types/vehicle")).data;
 			this.chargerTypes = (await axios.get("/config/types/charger")).data;
 		} catch (e) {
 			window.toasts.error(e);

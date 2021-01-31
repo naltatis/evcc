@@ -28,7 +28,12 @@
 								<span v-if="loadpoint.charger"> {{ loadpoint.charger.name }} </span>
 							</template>
 							<template #form>
-								<Form name="Hersteller" :meters="chargerTypes" usage="grid" />
+								<Form
+									name="Hersteller"
+									:meters="chargerTypes"
+									:save-endpoint="`/config/loadpoints/${index}/charger`"
+									test-endpoint="/config/test/charger"
+								/>
 							</template>
 						</CardEntry>
 						<CardEntry

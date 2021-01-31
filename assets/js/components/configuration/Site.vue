@@ -11,7 +11,12 @@
 				<template #status><h5>0,00 kW</h5></template>
 				<template #summary></template>
 				<template #form>
-					<Form name="Messgerät" :meters="metersFor('grid')" usage="grid" />
+					<Form
+						name="Messgerät"
+						:meters="metersFor('grid')"
+						save-endpoint="/config/meters/grid"
+						test-endpoint="/config/test/meter"
+					/>
 				</template>
 			</CardEntry>
 			<CardEntry
@@ -24,7 +29,12 @@
 				<template #status><h5 class="text-success">5,42 kW</h5></template>
 				<template #summary>SMA</template>
 				<template #form>
-					<Form name="Messgerät" :meters="metersFor('pv')" usage="pv" />
+					<Form
+						name="Messgerät"
+						:meters="metersFor('pv')"
+						save-endpoint="/config/meters/pv"
+						test-endpoint="/config/test/meter"
+					/>
 				</template>
 			</CardEntry>
 			<CardEntry
@@ -40,7 +50,12 @@
 				</template>
 				<template #summary>BYD B-BOX PREMIUM 9.0kWh</template>
 				<template #form>
-					<Form name="Messgerät" :meters="metersFor('battery')" usage="battery" />
+					<Form
+						name="Messgerät"
+						:meters="metersFor('battery')"
+						save-endpoint="/config/meters/battery"
+						test-endpoint="/config/test/meter"
+					/>
 				</template>
 			</CardEntry>
 		</template>
