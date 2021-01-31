@@ -35,8 +35,8 @@ type SettingsTCP struct {
 
 // SettingsTCPModel TCP sub type with model
 type SettingsTCPModel struct {
-	Model string `validate:"oneof=SMA Kostal Fronius SolarEdge Sunspec" ui:"de=Zählertyp"`
-	SettingsTCP
+	SettingsTCP `mapstructure:",squash"`
+	Model       string `validate:"required,oneof=SMA Kostal Fronius SolarEdge Sonstige" ui:"de=Zählertyp"`
 }
 
 // SettingsRTUTCP RTU over TCP sub type
@@ -48,8 +48,8 @@ type SettingsRTUTCP struct {
 
 // SettingsRTUTCPModel RTU over TCP sub type with model
 type SettingsRTUTCPModel struct {
-	Model string `validate:"oneof=ABB DZG IEM3000 INEPRO JANITZA MPM ORNO1P ORNO1P504 ORNO3P SBC SDM SDM220 SDM230 SDM72" ui:"de=Zählertyp"`
-	SettingsRTUTCP
+	SettingsRTUTCP `mapstructure:",squash"`
+	Model          string `validate:"required,oneof=ABB DZG IEM3000 INEPRO JANITZA MPM ORNO1P ORNO1P504 ORNO3P SBC SDM SDM220 SDM230 SDM72" ui:"de=Zählertyp"`
 }
 
 // SettingsRTU RTU/serial sub type
@@ -62,8 +62,8 @@ type SettingsRTU struct {
 
 // SettingsRTUModel RTU/serial sub type with model
 type SettingsRTUModel struct {
-	Model string `validate:"oneof=ABB DZG IEM3000 INEPRO JANITZA MPM ORNO1P ORNO1P504 ORNO3P SBC SDM SDM220 SDM230 SDM72" ui:"de=Zählertyp"`
-	SettingsRTU
+	SettingsRTU `mapstructure:",squash"`
+	Model       string `validate:"required,oneof=ABB DZG IEM3000 INEPRO JANITZA MPM ORNO1P ORNO1P504 ORNO3P SBC SDM SDM220 SDM230 SDM72" ui:"de=Zählertyp"`
 }
 
 // Connection decorates a meters.Connection with transparent slave id and error handling
@@ -257,9 +257,9 @@ func RS485FindDeviceOp(device *rs485.RS485, measurement meters.Measurement) (op 
 
 // Register contains the ModBus register configuration
 type Register struct {
-	Address uint16 `validate:"required" ui:"de=Adresse"`
-	Type    string `validate:"required,oneof=Input Holding" ui:"de=Typ"`
-	Decode  string `validate:"required,oneof=float32 float32s float64 uint16 uint32 uint32s uint64 int16 int32 int32s" ui:"de=Kodierung"`
+	Address uint16 `ui:"de=Adresse"`
+	Type    string `validate:"required_with=Address,oneof=Input Holding" ui:"de=Typ"`
+	Decode  string `validate:"required_with=Address,oneof=float32 float32s float64 uint16 uint32 uint32s uint64 int16 int32 int32s" ui:"de=Kodierung"`
 }
 
 // RegisterOperation creates a read operation from a register definition
