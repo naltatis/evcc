@@ -25,26 +25,33 @@ type Tesla struct {
 
 // teslaTokens contains access and refresh tokens
 type teslaTokens struct {
-	Access, Refresh string
+	Access  string `ui:"de=Access Token"`
+	Refresh string `validate:"required_with=Access" ui:"de=Refresh Token"`
+}
+
+type teslaConfig struct {
+	Title    string
+	Capacity int64
+	User     string      `validate:"required"`
+	Password string      `validate:"required_with=User" ui:",mask"`
+	Tokens   teslaTokens `ui:"de=Multi-Faktor Token"`
+	VIN      string
+	Cache    time.Duration
+}
+
+func teslaDefaults() teslaConfig {
+	return teslaConfig{
+		Cache: interval,
+	}
 }
 
 func init() {
-	registry.Add("tesla", "Tesla", NewTeslaFromConfig, configDefaults())
+	registry.Add("tesla", "Tesla", NewTeslaFromConfig, teslaDefaults())
 }
 
 // NewTeslaFromConfig creates a new Tesla vehicle
 func NewTeslaFromConfig(other map[string]interface{}) (api.Vehicle, error) {
-	cc := struct {
-		Title                  string
-		Capacity               int64
-		ClientID, ClientSecret string
-		User, Password         string
-		Tokens                 teslaTokens
-		VIN                    string
-		Cache                  time.Duration
-	}{
-		Cache: interval,
-	}
+	cc := teslaDefaults()
 
 	if err := util.DecodeOther(other, &cc); err != nil {
 		return nil, err
