@@ -1,12 +1,6 @@
 <template>
-	<div class="card">
-		<div class="card-header card-header-with-link">
-			<h3 class="mb-0">Hausinstallation</h3>
-			<slot name="action"></slot>
-		</div>
-		<div class="card-body">
-			<slot name="content"></slot>
-		</div>
+	<div class="mb-4 my-4">
+		<slot name="content"></slot>
 	</div>
 </template>
 

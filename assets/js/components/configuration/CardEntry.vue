@@ -1,13 +1,15 @@
 <template>
-	<div>
+	<div class="mb-4">
 		<div class="card-title">
 			<h5 class="mb-0" style="display: inline-block">
 				{{ name }}
 			</h5>
 			&nbsp;
-			<a href="#" @click.prevent="$emit('open')" v-show="!editMode">ändern</a>
-			<div class="float-right text-right"><slot name="status"></slot></div>
+			<!--<a href="#" @click.prevent="$emit('open')" v-show="!editMode">ändern</a>
+			<div class="float-right text-right"><slot name="status"></slot></div>-->
 		</div>
+		<slot name="form"></slot>
+		<!--
 		<transition name="fade" mode="out-in">
 			<div class="form pb-3" v-if="editMode">
 				<slot name="form"></slot>
@@ -17,7 +19,7 @@
 				<span class="text-success" v-if="isConfigured"> ✓</span>
 				<span class="text-danger" v-if="isRequired">(nicht konfiguriert)</span>
 			</p>
-		</transition>
+		</transition>-->
 	</div>
 </template>
 
