@@ -1,12 +1,14 @@
 <template>
 	<form @submit.prevent="submit">
-		<div class="form-group">
-			<label for="wechselrichter">{{ name }}</label>
-			<select class="custom-select" id="wechselrichter" v-model="selectedMeter">
-				<option :value="meter.type" :key="meter.type" v-for="meter in meters">
-					{{ meter.label }}
-				</option>
-			</select>
+		<div class="form-group row">
+			<label for="wechselrichter" class="col-sm-3 col-form-label">{{ name }}</label>
+			<div class="col-sm-9">
+				<select class="custom-select" id="wechselrichter" v-model="selectedMeter">
+					<option :value="meter.type" :key="meter.type" v-for="meter in meters">
+						{{ meter.label }}
+					</option>
+				</select>
+			</div>
 		</div>
 		<FormField
 			v-bind="formField"
@@ -28,11 +30,7 @@
 			/>
 		</div>
 		<p>
-			<button
-				type="button"
-				class="btn btn-outline-secondary btn-sm"
-				@click="$parent.$emit('close')"
-			>
+			<button type="button" class="btn btn-outline-secondary btn-sm" @click="$emit('close')">
 				abbrechen
 			</button>
 			&nbsp;
@@ -95,6 +93,7 @@ export default {
 		},
 		meters: {
 			type: Array,
+			default: [],
 		},
 	},
 	computed: {

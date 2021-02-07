@@ -1,5 +1,6 @@
 <template>
 	<div>
+		<h2>Hausinstallation</h2>
 		<div class="row">
 			<div class="d-none d-md-flex col-12 col-md-4 mt-md-4 align-items-end">
 				<p class="h1">{{ title || "Home" }}</p>

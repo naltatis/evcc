@@ -1,35 +1,33 @@
 <template>
-	<div class="card">
-		<div class="card-header card-header-with-link">
-			<h3 class="mb-0">Fahrzeuge</h3>
-			<a class="text" href="#" @click.prevent="addVehicle">hinzufügen</a>
+	<div>
+		<div class="d-flex justify-content-start align-items-baseline mb-4">
+			<h2>Fahrzeuge</h2>
+			<a class="text px-3" href="#" @click.prevent="addVehicle">hinzufügen</a>
 		</div>
-		<div class="card-body">
-			<CardEntry
-				v-for="(vehicle, index) in vehicles"
-				:key="index"
-				:name="vehicle.name"
-				:edit-mode="editMode === `vehicle_${index}`"
-				@open="open(`vehicle_${index}`)"
-				@close="close"
-			>
-				<template #status>
-					<h5 class="mb-0">{{ vehicle.data.charge }} %</h5>
-					<small class="text-muted">{{ vehicle.data.state }}</small>
-				</template>
-				<template #summary>
-					<span>VW API</span>
-				</template>
-				<template #form>
-					<Form
-						name="Hersteller"
-						:meters="vehicleTypes"
-						:save-endpoint="`/config/vehicles/${index}`"
-						test-endpoint="/config/test/vehicle"
-					/>
-				</template>
-			</CardEntry>
-		</div>
+		<CardEntry
+			v-for="(vehicle, index) in vehicles"
+			:key="index"
+			:name="vehicle.name"
+			:edit-mode="editMode === `vehicle_${index}`"
+			@open="open(`vehicle_${index}`)"
+			@close="close"
+		>
+			<template #status>
+				<h5 class="mb-0">{{ vehicle.data.charge }} %</h5>
+				<small class="text-muted">{{ vehicle.data.state }}</small>
+			</template>
+			<template #summary>
+				<span>VW API</span>
+			</template>
+			<template #form>
+				<Form
+					name="Hersteller"
+					:meters="vehicleTypes"
+					:save-endpoint="`/config/vehicles/${index}`"
+					test-endpoint="/config/test/vehicle"
+				/>
+			</template>
+		</CardEntry>
 	</div>
 </template>
 

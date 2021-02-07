@@ -1,82 +1,81 @@
 <template>
-	<Card title="Hausinstallation">
-		<template #content>
-			<CardEntry
-				name="Netzanschluss"
-				is-required
-				:edit-mode="editMode === 'grid'"
-				@open="open('grid')"
-				@close="close"
-			>
-				<template #status><h5>0,00 kW</h5></template>
-				<template #summary></template>
-				<template #form>
-					<Form
-						name="Messgerät"
-						:meters="metersFor('grid')"
-						save-endpoint="/config/meters/grid"
-						test-endpoint="/config/test/meter"
-					/>
-				</template>
-			</CardEntry>
-			<CardEntry
-				name="Erzeuger / Wechselrichter"
-				is-configured
-				:edit-mode="editMode === 'pv'"
-				@open="open('pv')"
-				@close="close"
-			>
-				<template #status><h5 class="text-success">5,42 kW</h5></template>
-				<template #summary>SMA</template>
-				<template #form>
-					<Form
-						name="Messgerät"
-						:meters="metersFor('pv')"
-						save-endpoint="/config/meters/pv"
-						test-endpoint="/config/test/meter"
-					/>
-				</template>
-			</CardEntry>
-			<CardEntry
-				name="Hausbatterie"
-				is-configured
-				:edit-mode="editMode === 'battery'"
-				@open="open('battery')"
-				@close="close"
-			>
-				<template #status>
-					<h5 class="text-success mb-0">4,20 kW</h5>
-					<small class="text-muted">76%</small>
-				</template>
-				<template #summary>BYD B-BOX PREMIUM 9.0kWh</template>
-				<template #form>
-					<Form
-						name="Messgerät"
-						:meters="metersFor('battery')"
-						save-endpoint="/config/meters/battery"
-						test-endpoint="/config/test/meter"
-					/>
-				</template>
-			</CardEntry>
-		</template>
-	</Card>
+	<div>
+		<h2>Hausinstallation</h2>
+		<Card title="Hausinstallation">
+			<template #content>
+				<CardEntry
+					name="Netzanschluss"
+					is-required
+					:edit-mode="editMode === 'grid'"
+					@open="open('grid')"
+					@close="close"
+				>
+					<template #status><h5>0,00 kW</h5></template>
+					<template #summary></template>
+					<template #form>
+						<Form
+							name="Messgerät"
+							:meters="metersFor('grid')"
+							save-endpoint="/config/meters/grid"
+							test-endpoint="/config/test/meter"
+						/>
+					</template>
+				</CardEntry>
+				<CardEntry
+					name="Erzeuger / Wechselrichter"
+					is-configured
+					:edit-mode="editMode === 'pv'"
+					@open="open('pv')"
+					@close="close"
+				>
+					<template #status><h5 class="text-success">5,42 kW</h5></template>
+					<template #summary>SMA</template>
+					<template #form>
+						<Form
+							name="Messgerät"
+							:meters="metersFor('pv')"
+							save-endpoint="/config/meters/pv"
+							test-endpoint="/config/test/meter"
+						/>
+					</template>
+				</CardEntry>
+				<CardEntry
+					name="Hausbatterie"
+					is-configured
+					:edit-mode="editMode === 'battery'"
+					@open="open('battery')"
+					@close="close"
+				>
+					<template #status>
+						<h5 class="text-success mb-0">4,20 kW</h5>
+						<small class="text-muted">76%</small>
+					</template>
+					<template #summary>BYD B-BOX PREMIUM 9.0kWh</template>
+					<template #form>
+						<Form
+							name="Messgerät"
+							:meters="metersFor('battery')"
+							save-endpoint="/config/meters/battery"
+							test-endpoint="/config/test/meter"
+						/>
+					</template>
+				</CardEntry>
+			</template>
+		</Card>
+	</div>
 </template>
 
 <script>
 import Card from "./Card";
 import CardEntry from "./CardEntry";
 import Form from "./Form";
+import axios from "axios";
 
 export default {
 	name: "Site",
 	components: { Card, CardEntry, Form },
-	props: {
-		meters: {
-			type: Array,
-		},
-	},
 	data: function () {
-		return { editMode: null };
+		return { editMode: null, meters: [] };
 	},
 	methods: {
 		metersFor: function () {
@@ -89,6 +88,13 @@ export default {
 		close: function () {
 			this.editMode = null;
 		},
+	},
+	mounted: async function () {
+		try {
+			this.meters = (await axios.get("/config/types/meter")).data;
+		} catch (e) {
+			window.toasts.error(e);
+		}
 	},
 };
 </script>

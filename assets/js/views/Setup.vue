@@ -1,30 +1,33 @@
 <template>
 	<div class="container">
-		<div class="row mt-4">
-			<div class="col-12"></div>
+		<div class="row mt-4 border-bottom">
+			<div class="col-12"><h1>Konfiguration</h1></div>
 		</div>
 		<div class="row mt-4">
-			<div class="col-4">
-				<div class="list-group sticky-top py-3" id="side-navigation">
-					<a href="#/setup/site" class="list-group-item list-group-item-action">
+			<div class="col-md-5 col-lg-4">
+				<div class="list-group sticky-top py-3">
+					<router-link to="/setup/site" class="list-group-item list-group-item-action">
 						<div class="d-flex w-100 justify-content-between">
 							<h5 class="mb-2">Hausinstallation</h5>
 							<strong class="text-success">✓</strong>
 						</div>
 						<p class="mb-1 d-flex w-100 justify-content-between">
 							<span>Netzzähler</span>
-							<small>2,2 kW Bezug</small>
+							<small class="text-muted">2,2 kW Bezug</small>
 						</p>
 						<p class="mb-1 d-flex w-100 justify-content-between">
 							<span>PV Anlage</span>
-							<small>1,2 kW Produktion</small>
+							<small class="text-muted">1,2 kW Produktion</small>
 						</p>
 						<p class="mb-1 d-flex w-100 justify-content-between">
 							<span>Hausakku</span>
-							<small>43 % / -0.5 kW</small>
+							<small class="text-muted">43 % / -0.5 kW</small>
 						</p>
-					</a>
-					<a href="#/setup/vehicles" class="list-group-item list-group-item-action">
+					</router-link>
+					<router-link
+						to="/setup/vehicles"
+						class="list-group-item list-group-item-action"
+					>
 						<div class="d-flex w-100 justify-content-between">
 							<h5 class="mb-2">Fahrzeuge</h5>
 							<strong class="text-success">✓</strong>
@@ -37,8 +40,11 @@
 							<span>Tesla Model 3</span>
 							<small class="text-muted">schläft / 90%</small>
 						</p>
-					</a>
-					<a href="#/setup/loadpoints" class="list-group-item list-group-item-action">
+					</router-link>
+					<router-link
+						to="/setup/loadpoints"
+						class="list-group-item list-group-item-action"
+					>
 						<div class="d-flex w-100 justify-content-between">
 							<h5 class="mb-2">Ladepunkte</h5>
 							<strong class="text-success">✓</strong>
@@ -57,8 +63,11 @@
 								<small class="text-muted">lädt / 11 kW</small>
 							</span>
 						</p>
-					</a>
-					<a href="#/setup/interfaces" class="list-group-item list-group-item-action">
+					</router-link>
+					<router-link
+						to="/setup/interfaces"
+						class="list-group-item list-group-item-action"
+					>
 						<h5 class="mb-2">Schnittstellen</h5>
 						<p class="mb-1 d-flex w-100 justify-content-between">
 							<span>MQTT</span>
@@ -68,8 +77,11 @@
 							<span>InfluxDB</span>
 							<small class="text-muted">nicht konfiguriert</small>
 						</p>
-					</a>
-					<a href="#/setup/notifications" class="list-group-item list-group-item-action">
+					</router-link>
+					<router-link
+						to="/setup/notifications"
+						class="list-group-item list-group-item-action"
+					>
 						<h5 class="mb-2">Benachrichtigungen</h5>
 						<p class="mb-1 d-flex w-100 justify-content-between">
 							<span>Pushover</span>
@@ -83,60 +95,41 @@
 							<span>E-Mail</span>
 							<small class="text-muted">nicht konfiguriert</small>
 						</p>
-					</a>
+					</router-link>
 				</div>
 			</div>
-			<div
-				class="col-8"
-				data-bs-spy="scroll"
-				data-bs-target="#list-example"
-				data-bs-offset="0"
-				tabindex="0"
-			>
-				<h1 class="mb-4 pt-2">Konfiguration</h1>
-
-				<h2 id="/setup/site">Hausinstallation</h2>
-				<Site :meters="meters" />
-				<h2 id="/setup/vehicles">Fahrzeuge</h2>
-				<Vehicles :vehicle-types="vehicleTypes" />
-				<h2 id="/setup/loadpoints">Ladepunkte</h2>
-				<Loadpoints :charger-types="chargerTypes" />
-				<h2 id="/setup/interfaces">Schnittstellen</h2>
-				<Interfaces />
-				<h2 id="/setup/notifications">Benachrichtigungen</h2>
-				<Notifications />
+			<div class="col-md-7 offset-lg-1 col-lg-7 py-3">
+				<router-view></router-view>
 			</div>
 		</div>
 	</div>
 </template>
 
 <script>
-import axios from "axios";
-
-import Site from "../components/configuration/Site";
-import Vehicles from "../components/configuration/Vehicles";
-import Loadpoints from "../components/configuration/Loadpoints";
-import Interfaces from "../components/configuration/Interfaces";
-import Notifications from "../components/configuration/Notifications";
-
 export default {
 	name: "Setup",
-	components: { Site, Vehicles, Loadpoints, Interfaces, Notifications },
-	data: function () {
-		return {
-			meters: [],
-			vehicleTypes: [],
-			chargerTypes: [],
-		};
-	},
-	mounted: async function () {
-		try {
-			this.meters = (await axios.get("/config/types/meter")).data;
-			this.vehicleTypes = (await axios.get("/config/types/vehicle")).data;
-			this.chargerTypes = (await axios.get("/config/types/charger")).data;
-		} catch (e) {
-			window.toasts.error(e);
-		}
-	},
 };
 </script>
+
+<style scoped>
+.list-group-item-action.router-link-active {
+	color: inherit;
+	border: 1px solid rgba(0, 0, 0, 0.125);
+	background-color: inherit;
+	border-right-color: var(--primary);
+}
+.list-group-item-action:after {
+	content: "";
+	position: absolute;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	width: 4px;
+	opacity: 0;
+	background-color: var(--primary);
+	transition: opacity 100ms ease-in;
+}
+.list-group-item-action.router-link-active:after {
+	opacity: 1;
+}
+</style>

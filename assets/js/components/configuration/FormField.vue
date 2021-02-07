@@ -1,7 +1,10 @@
 <template>
 	<input type="hidden" v-if="inputType === 'hidden'" :name="name" :value="`${this.default}`" />
-	<div class="form-group" v-else>
-		<div class="custom-control custom-switch mb-2" v-if="inputType === 'subform' && !required">
+	<div class="form-group row" v-else>
+		<div
+			class="mx-3 custom-control custom-switch mb-2"
+			v-if="inputType === 'subform' && !required"
+		>
 			<input
 				type="checkbox"
 				class="custom-control-input"
@@ -10,88 +13,103 @@
 			/>
 			<label class="custom-control-label" :for="name">{{ label }}</label>
 		</div>
-		<label :for="name" v-else>
+		<label :for="name" v-else class="col-sm-3 col-form-label">
 			{{ label }}
 			<small class="text-muted" v-if="!required"> (optional) </small>
 		</label>
-		<input
-			type="text"
-			v-if="inputType === 'text'"
-			class="form-control"
-			:value="this.default"
-			:name="name"
-			:id="name"
-		/>
-		<input
-			type="password"
-			v-if="inputType === 'password'"
-			class="form-control"
-			placeholder="********"
-			:name="name"
-			:id="name"
-		/>
-		<input
-			type="number"
-			v-if="inputType === 'number'"
-			class="form-control"
-			style="width: 50%"
-			:value="this.default"
-			:name="name"
-			:id="name"
-		/>
-		<div class="input-group" v-if="inputType === 'duration'" style="width: 8em">
+		<div class="col-sm-9">
 			<input
-				type="number"
+				type="text"
+				v-if="inputType === 'text'"
 				class="form-control"
+				:value="this.default"
 				:name="name"
 				:id="name"
-				:value="this.default"
 			/>
-			<div class="input-group-append">
-				<span class="input-group-text">s</span>
-			</div>
-		</div>
-		<div
-			class="btn-group btn-group-toggle"
-			data-toggle="buttons"
-			style="display: block"
-			v-if="inputType === 'yes_no'"
-		>
-			<label class="btn btn-outline-secondary" :class="{ active: this.default === 'true' }">
+			<input
+				type="password"
+				v-if="inputType === 'password'"
+				class="form-control"
+				placeholder="********"
+				:name="name"
+				:id="name"
+			/>
+			<input
+				type="number"
+				v-if="inputType === 'number'"
+				class="form-control"
+				style="width: 50%"
+				:value="this.default"
+				:name="name"
+				:id="name"
+			/>
+			<div class="input-group" v-if="inputType === 'duration'" style="width: 8em">
 				<input
-					type="radio"
+					type="number"
+					class="form-control"
 					:name="name"
 					:id="name"
-					value="true"
-					:checked="this.default === 'true'"
+					:value="this.default"
 				/>
-				ja
-			</label>
-			<label class="btn btn-outline-secondary" :class="{ active: this.default !== 'true' }">
-				<input type="radio" value="false" :name="name" :checked="this.default !== 'true'" />
-				nein
-			</label>
-		</div>
-		<div v-if="inputType === 'plugin'">
-			<button type="button" class="btn btn-outline-secondary">Plugin konfigurieren</button>
-		</div>
-		<select v-if="inputType === 'select'" class="custom-select" :name="name" :id="name">
-			<option v-if="!required" value="">- bitte wählen -</option>
-			<option :key="value" :value="value" v-for="value in this.enum">
-				{{ value }}
-			</option>
-		</select>
-		<div
-			v-if="inputType === 'subform'"
-			class="ml-1 pl-3 border-left"
-			v-show="subformEnabled || required"
-		>
-			<FormField
-				v-for="formField in this.children"
-				:key="formField.name"
-				v-bind="formField"
-				:name="`${name}.${formField.name}`"
-			/>
+				<div class="input-group-append">
+					<span class="input-group-text">s</span>
+				</div>
+			</div>
+			<div
+				class="btn-group btn-group-toggle"
+				data-toggle="buttons"
+				style="display: block"
+				v-if="inputType === 'yes_no'"
+			>
+				<label
+					class="btn btn-outline-secondary"
+					:class="{ active: this.default === 'true' }"
+				>
+					<input
+						type="radio"
+						:name="name"
+						:id="name"
+						value="true"
+						:checked="this.default === 'true'"
+					/>
+					ja
+				</label>
+				<label
+					class="btn btn-outline-secondary"
+					:class="{ active: this.default !== 'true' }"
+				>
+					<input
+						type="radio"
+						value="false"
+						:name="name"
+						:checked="this.default !== 'true'"
+					/>
+					nein
+				</label>
+			</div>
+			<div v-if="inputType === 'plugin'">
+				<button type="button" class="btn btn-outline-secondary">
+					Plugin konfigurieren
+				</button>
+			</div>
+			<select v-if="inputType === 'select'" class="custom-select" :name="name" :id="name">
+				<option v-if="!required" value="">- bitte wählen -</option>
+				<option :key="value" :value="value" v-for="value in this.enum">
+					{{ value }}
+				</option>
+			</select>
+			<div
+				v-if="inputType === 'subform'"
+				class="ml-1 pl-3 border-left"
+				v-show="subformEnabled || required"
+			>
+				<FormField
+					v-for="formField in this.children"
+					:key="formField.name"
+					v-bind="formField"
+					:name="`${name}.${formField.name}`"
+				/>
+			</div>
 		</div>
 	</div>
 </template>
@@ -128,3 +146,10 @@ export default {
 	},
 };
 </script>
+
+<style scoped>
+.col-form-label {
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+</style>
