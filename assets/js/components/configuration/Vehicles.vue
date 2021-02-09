@@ -41,13 +41,11 @@
 
 <script>
 import Form from "./Form";
+import axios from "axios";
 
 export default {
 	name: "Vehicles",
 	components: { Form },
-	props: {
-		vehicleTypes: Array,
-	},
 	data: function () {
 		return {
 			editMode: undefined,
@@ -57,6 +55,14 @@ export default {
 			],
 		};
 	},
+	mounted: async function () {
+		try {
+			this.vehicleTypes = (await axios.get("/config/types/vehicle")).data;
+		} catch (e) {
+			window.toasts.error(e);
+		}
+	},
+
 	methods: {
 		open: function (index) {
 			this.editMode = index;

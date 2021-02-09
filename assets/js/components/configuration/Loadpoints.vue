@@ -21,6 +21,7 @@
 				<span v-if="loadpoint.charger"> {{ loadpoint.charger.name }} </span>
 				<a href="#" @click.prevent="open(`charger_${index}`)">ändern</a>
 			</div>
+			<!--
 			<h5 class="mt-4 mb-3">Fahrzeuge</h5>
 			<form>
 				<div class="form-check form-check-inline">
@@ -32,6 +33,7 @@
 					<label class="form-check-label" for="vehicle_0_1"> Tesla Model 3 </label>
 				</div>
 			</form>
+			-->
 			<h5 class="mt-4 mb-3">Ladeverhalten</h5>
 			<p>
 				Modus: PV-only<br />

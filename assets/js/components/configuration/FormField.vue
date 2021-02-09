@@ -30,7 +30,6 @@
 				type="password"
 				v-if="inputType === 'password'"
 				class="form-control"
-				placeholder="********"
 				:name="name"
 				:id="name"
 			/>
@@ -135,12 +134,13 @@ export default {
 		inputType: function () {
 			if (this.hidden) return "hidden";
 			if (this.enum) return "select";
-			if (this.masked) return "password";
+			if (this.type === "password") return "password";
 			if (this.type === "struct") return "subform";
 			if (this.type === "duration") return "duration";
 			if (this.type === "bool") return "yes_no";
 			if (this.type === "plugin") return "plugin";
-			if (this.type === "int" || this.type === "uint8") return "number";
+			if (this.type === "int" || this.type === "uint8" || this.type === "int64")
+				return "number";
 			return "text";
 		},
 	},
