@@ -457,10 +457,7 @@ func TestSetModeAndSocAtDisconnect(t *testing.T) {
 		LoadPointConfig: LoadPointConfig{
 			MinCurrent: minA,
 			MaxCurrent: maxA,
-			OnDisconnect: struct {
-				Mode      api.ChargeMode `mapstructure:"mode"`      // Charge mode to apply when car disconnected
-				TargetSoC int            `mapstructure:"targetSoC"` // Target SoC to apply when car disconnected
-			}{
+			OnDisconnect: DisconnectConfig{
 				Mode:      api.ModeOff,
 				TargetSoC: 70,
 			},
@@ -651,7 +648,7 @@ func TestSoCPoll(t *testing.T) {
 	}
 
 	tc := []struct {
-		mode   string
+		mode   PollMode
 		status api.ChargeStatus
 		dt     time.Duration
 		res    bool
