@@ -1,8 +1,10 @@
 <template>
 	<form @submit.prevent="submit">
 		<div class="form-group row">
-			<label for="wechselrichter" class="col-sm-3 col-form-label">{{ name }}</label>
-			<div class="col-sm-9">
+			<label for="wechselrichter" class="col-sm-4 col-form-label text-right">
+				{{ name }}
+			</label>
+			<div class="col-sm-8">
 				<select class="custom-select" id="wechselrichter" v-model="selectedMeter">
 					<option :value="meter.type" :key="meter.type" v-for="meter in meters">
 						{{ meter.label }}
@@ -29,34 +31,40 @@
 				v-for="formField in optionalFormFields"
 			/>
 		</div>
-		<p>
-			<button type="button" class="btn btn-outline-secondary btn-sm" @click="$emit('close')">
-				abbrechen
-			</button>
-			&nbsp;
-			<button type="submit" name="btn-test" class="btn btn-outline-primary btn-sm">
-				testen
-				<span
-					class="spinner-border spinner-border-sm"
-					role="status"
-					aria-hidden="true"
-					v-if="testPending"
-				></span>
-			</button>
-			&nbsp;
-			<button
-				type="submit"
-				name="btn-save"
-				class="btn btn-sm"
-				:disabled="!testSuccess"
-				:class="{
-					'btn-outline-primary': !testSuccess,
-					'btn-success': testSuccess,
-				}"
-			>
-				speichern
-			</button>
-		</p>
+		<div class="row">
+			<p class="offset-sm-4 col-sm-8">
+				<button
+					type="button"
+					class="btn btn-outline-secondary btn-sm"
+					@click="$emit('close')"
+				>
+					abbrechen
+				</button>
+				&nbsp;
+				<button type="submit" name="btn-test" class="btn btn-outline-primary btn-sm">
+					testen
+					<span
+						class="spinner-border spinner-border-sm"
+						role="status"
+						aria-hidden="true"
+						v-if="testPending"
+					></span>
+				</button>
+				&nbsp;
+				<button
+					type="submit"
+					name="btn-save"
+					class="btn btn-sm"
+					:disabled="!testSuccess"
+					:class="{
+						'btn-outline-primary': !testSuccess,
+						'btn-success': testSuccess,
+					}"
+				>
+					speichern
+				</button>
+			</p>
+		</div>
 		<p class="text-success" v-if="testMessage && testSuccess">✔ {{ testMessage }}</p>
 		<p class="text-danger" v-if="testMessage && !testSuccess">⚠️ {{ testMessage }}</p>
 	</form>
@@ -65,6 +73,7 @@
 <script>
 import FormField from "./FormField";
 import axios from "axios";
+import { unflatten } from "../../utils";
 
 export default {
 	name: "Form",
@@ -111,10 +120,10 @@ export default {
 	methods: {
 		formToJson: function (form) {
 			const formData = new FormData(form);
-			console.log(formData);
 			var result = {};
 			formData.forEach((value, key) => (result[key] = value));
-			return result;
+			console.log(result, unflatten(result));
+			return unflatten(result);
 		},
 		submit: function (e) {
 			const { submitter: button, target: form } = e;

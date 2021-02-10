@@ -54,9 +54,9 @@ export default {
 	},
 	mounted: async function () {
 		try {
-			this.meters.grid = (await axios.get("/config/templates/meter/grid")).data;
-			this.meters.pv = (await axios.get("/config/templates/meter/pv")).data;
-			this.meters.battery = (await axios.get("/config/templates/meter/battery")).data;
+			this.meters.grid = (await axios.get("/config/types/meter/grid")).data;
+			this.meters.pv = (await axios.get("/config/types/meter/pv")).data;
+			this.meters.battery = (await axios.get("/config/types/meter/battery")).data;
 		} catch (e) {
 			window.toasts.error(e);
 		}

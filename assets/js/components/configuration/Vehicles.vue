@@ -25,9 +25,11 @@
 					test-endpoint="/config/test/vehicle"
 					@close="close"
 				/>
-				<a class="text text-danger" href="#" @click.prevent="removeVehicle(index)">
-					Fahrzeug entfernen
-				</a>
+				<div class="text-right">
+					<a class="text text-danger" href="#" @click.prevent="removeVehicle(index)">
+						Fahrzeug entfernen
+					</a>
+				</div>
 			</div>
 			<div class="mb-3 mt-1" v-else>
 				<span>

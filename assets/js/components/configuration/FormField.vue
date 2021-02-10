@@ -1,23 +1,27 @@
 <template>
 	<input type="hidden" v-if="inputType === 'hidden'" :name="name" :value="`${this.default}`" />
 	<div class="form-group row" v-else>
-		<div
-			class="mx-3 custom-control custom-switch mb-2"
-			v-if="inputType === 'subform' && !required"
-		>
-			<input
-				type="checkbox"
-				class="custom-control-input"
-				v-model="subformEnabled"
-				:id="name"
-			/>
-			<label class="custom-control-label" :for="name">{{ label }}</label>
-		</div>
-		<label :for="name" v-else class="col-sm-3 col-form-label">
+		<label :for="name" class="col-sm-4 col-form-label text-right">
 			{{ label }}
-			<small class="text-muted" v-if="!required"> (optional) </small>
+			<small class="text-muted d-block" v-if="!required"> (optional) </small>
 		</label>
-		<div class="col-sm-9">
+		<div class="col-sm-8">
+			<div
+				class="my-2 custom-control custom-switch"
+				v-if="inputType === 'subform' && !required"
+			>
+				<input
+					type="checkbox"
+					class="custom-control-input"
+					v-model="subformEnabled"
+					:id="name"
+				/>
+				<label class="custom-control-label" :for="name">
+					<span v-if="subformEnabled">aktiv</span>
+					<span v-else>inaktiv</span>
+				</label>
+			</div>
+
 			<input
 				type="text"
 				v-if="inputType === 'text'"
@@ -33,16 +37,20 @@
 				:name="name"
 				:id="name"
 			/>
-			<input
-				type="number"
-				v-if="inputType === 'number'"
-				class="form-control"
-				style="width: 50%"
-				:value="this.default"
-				:name="name"
-				:id="name"
-			/>
-			<div class="input-group" v-if="inputType === 'duration'" style="width: 8em">
+			<div class="input-group" v-if="inputType === 'number'" style="width: 50%">
+				<input
+					type="number"
+					class="form-control"
+					:name="name"
+					:id="name"
+					:value="this.default"
+				/>
+				<div class="input-group-append" v-if="unit">
+					<span class="input-group-text">{{ unit }}</span>
+				</div>
+			</div>
+
+			<div class="input-group" v-if="inputType === 'duration'" style="width: 50%">
 				<input
 					type="number"
 					class="form-control"
@@ -123,6 +131,7 @@ export default {
 		hidden: Boolean,
 		masked: Boolean,
 		label: String,
+		unit: String,
 		enum: Array,
 		children: Array,
 		default: [String, Number],
