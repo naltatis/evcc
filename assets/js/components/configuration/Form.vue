@@ -1,10 +1,10 @@
 <template>
 	<form @submit.prevent="submit">
-		<div class="form-group row">
-			<label for="wechselrichter" class="col-sm-4 col-form-label text-right">
+		<div class="form-group row" v-if="meters">
+			<label for="wechselrichter" class="col-sm-3 col-form-label">
 				{{ name }}
 			</label>
-			<div class="col-sm-8">
+			<div class="col-sm-9">
 				<select class="custom-select" id="wechselrichter" v-model="selectedMeter">
 					<option :value="meter.type" :key="meter.type" v-for="meter in meters">
 						{{ meter.label }}
@@ -12,27 +12,9 @@
 				</select>
 			</div>
 		</div>
-		<FormField
-			v-bind="formField"
-			:key="formField.name"
-			v-for="formField in requiredFormFields"
-		/>
-		<p v-if="optionalFormFields.length > 0">
-			<a href="#" @click.prevent="extended = !extended">
-				erweiterte Einstellungen
-				<span v-if="!extended">anzeigen</span>
-				<span v-else>ausblenden</span>
-			</a>
-		</p>
-		<div v-show="extended">
-			<FormField
-				v-bind="formField"
-				:key="formField.name"
-				v-for="formField in optionalFormFields"
-			/>
-		</div>
+		<FormField v-bind="formField" :key="formField.name" v-for="formField in formFields" />
 		<div class="row">
-			<p class="offset-sm-4 col-sm-8">
+			<p class="offset-sm-3 col-sm-9">
 				<button
 					type="button"
 					class="btn btn-outline-secondary btn-sm"
@@ -100,21 +82,20 @@ export default {
 		saveEndpoint: {
 			type: String,
 		},
+		fields: {
+			type: Array,
+		},
 		meters: {
 			type: Array,
-			default: [],
 		},
 	},
 	computed: {
 		formFields: function () {
+			if (this.fields) {
+				return this.fields;
+			}
 			const meter = this.meters.find((m) => m.type === this.selectedMeter);
 			return meter ? meter.fields : [];
-		},
-		requiredFormFields: function () {
-			return this.formFields; //.filter((f) => f.required || f.hidden);
-		},
-		optionalFormFields: function () {
-			return []; //this.formFields.filter((field) => !this.requiredFormFields.includes(field));
 		},
 	},
 	methods: {

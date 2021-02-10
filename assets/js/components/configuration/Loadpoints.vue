@@ -9,6 +9,18 @@
 				<h3 class="mb-0">{{ loadpoint.name }}</h3>
 				<a class="text px-3" href="#" @click.prevent="renameLoadpoint(index)">umbenennen</a>
 			</div>
+
+			<div class="d-flex justify-content-start align-items-baseline mt-4 mb-2">
+				<h5 class="my-0">Wallbox</h5>
+				<a
+					class="text px-2"
+					href="#"
+					@click.prevent="open(`charger_${index}`)"
+					v-if="editMode !== `charger_${index}`"
+				>
+					ändern
+				</a>
+			</div>
 			<Form
 				v-if="editMode === `charger_${index}`"
 				name="Hersteller"
@@ -19,23 +31,49 @@
 			/>
 			<div class="mb-3 mt-1" v-else>
 				<span v-if="loadpoint.charger"> {{ loadpoint.charger.name }} </span>
-				<a href="#" @click.prevent="open(`charger_${index}`)">ändern</a>
 			</div>
-			<!--
-			<h5 class="mt-4 mb-3">Fahrzeuge</h5>
-			<form>
-				<div class="form-check form-check-inline">
-					<input type="checkbox" class="form-check-input" id="vehicle_0_0" checked />
-					<label class="form-check-label" for="vehicle_0_0"> VW ID.3 </label>
-				</div>
-				<div class="form-check">
-					<input type="checkbox" class="form-check-input" id="vehicle_0_1" />
-					<label class="form-check-label" for="vehicle_0_1"> Tesla Model 3 </label>
-				</div>
-			</form>
-			-->
-			<h5 class="mt-4 mb-3">Ladeverhalten</h5>
-			<p>
+
+			<div class="d-flex justify-content-start align-items-baseline mt-4 mb-2">
+				<h5 class="my-0">Messgerät</h5>
+				<a
+					class="text px-2"
+					href="#"
+					@click.prevent="open(`meter_${index}`)"
+					v-if="editMode !== `meter_${index}`"
+				>
+					ändern
+				</a>
+			</div>
+			<Form
+				v-if="editMode === `meter_${index}`"
+				name="Hersteller"
+				:meters="meterTypes"
+				:save-endpoint="`/config/loadpoints/${index}/meter/charge`"
+				test-endpoint="/config/test/meter/charge"
+				@close="close"
+			/>
+			<div class="mb-3 mt-1" v-else>
+				<span v-if="loadpoint.meter"> {{ loadpoint.meter.name }} </span>
+			</div>
+
+			<div class="d-flex justify-content-start align-items-baseline mt-4 mb-2">
+				<h5 class="my-0">Ladeverhalten</h5>
+				<a
+					class="text px-2"
+					href="#"
+					@click.prevent="open(`behaviour_${index}`)"
+					v-if="editMode !== `behaviour_${index}`"
+				>
+					ändern
+				</a>
+			</div>
+			<Form
+				v-if="editMode === `behaviour_${index}`"
+				:fields="behaviourFields"
+				:save-endpoint="`/config/loadpoints/${index}`"
+				@close="close"
+			/>
+			<p v-else>
 				Modus: PV-only<br />
 				Ladeziel: 90% (sofort 20%)<br />
 				Ladeleistung: 6A bis 16A, 3-phasig<br />
@@ -59,19 +97,28 @@ export default {
 	data: function () {
 		return {
 			editMode: undefined,
+			meterTypes: [],
 			chargerTypes: [],
+			loadpointConfig: [[]],
 			loadpoints: [
-				{ name: "Carport", charger: { name: "NRGKick Connect" } },
-				{ name: "Garage", charger: { name: "KEBA X30" } },
+				{ name: "Carport", charger: { name: "NRGKick Connect" }, meter: {} },
+				{ name: "Garage", charger: { name: "KEBA X30" }, meter: {} },
 			],
 		};
 	},
 	mounted: async function () {
 		try {
+			this.meterTypes = (await axios.get("/config/types/meter/charge")).data;
 			this.chargerTypes = (await axios.get("/config/types/charger")).data;
+			this.loadpointConfig = (await axios.get("/config/loadpoints")).data;
 		} catch (e) {
 			window.toasts.error(e);
 		}
+	},
+	computed: {
+		behaviourFields: function () {
+			return this.loadpointConfig[0].filter((x) => x.name !== "Title");
+		},
 	},
 	methods: {
 		open: function (index) {
