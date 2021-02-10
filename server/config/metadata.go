@@ -32,6 +32,7 @@ type FieldMetadata struct {
 	Required bool            `json:"required,omitempty"`
 	Hidden   bool            `json:"hidden,omitempty"`
 	Label    string          `json:"label,omitempty"`
+	Unit     string          `json:"unit,omitempty"`
 	Enum     []interface{}   `json:"enum,omitempty"`
 	Default  interface{}     `json:"default,omitempty"`
 	Children []FieldMetadata `json:"children,omitempty"`
@@ -76,6 +77,16 @@ func label(f *structs.Field) string {
 	}
 	if val == "" {
 		val = f.Name()
+	}
+
+	return val
+}
+
+// unit is the exported field unit
+func unit(f *structs.Field) string {
+	val := tagKey(f, "ui", "unit")
+	if val == "" {
+		val = translateUnit(f.Name())
 	}
 
 	return val
@@ -148,6 +159,7 @@ func Annotate(s interface{}) (ds []FieldMetadata) {
 		if !d.Hidden {
 			// label
 			d.Label = label(f)
+			d.Unit = unit(f)
 
 			// enums
 			if oneof := tagKey(f, "validate", "oneof"); oneof != "" {
