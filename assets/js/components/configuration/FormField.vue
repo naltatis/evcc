@@ -164,7 +164,12 @@ export default {
 			if (this.type === "duration") return "duration";
 			if (this.type === "bool") return "yes_no";
 			if (this.type === "plugin") return "plugin";
-			if (this.type === "int" || this.type === "uint8" || this.type === "int64")
+			if (
+				this.type === "int" ||
+				this.type === "uint8" ||
+				this.type === "int64" ||
+				this.type === "float64"
+			)
 				return "number";
 			return "text";
 		},
