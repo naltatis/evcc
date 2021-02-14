@@ -54,8 +54,12 @@ func init() {
 func NewTeslaFromConfig(other map[string]interface{}) (api.Vehicle, error) {
 	cc := teslaDefaults()
 
-	if err := util.DecodeOther(other, &cc); err != nil {
+	if err := util.DecodeOther(other, &cc, true); err != nil {
 		return nil, err
+	}
+
+	if cc.User == "" && cc.Tokens.Access == "" {
+		return nil, errors.New("missing credentials")
 	}
 
 	v := &Tesla{
