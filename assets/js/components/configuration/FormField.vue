@@ -4,7 +4,7 @@
 			type="hidden"
 			v-if="inputType === 'hidden'"
 			:name="name"
-			:value="`${this.default}`"
+			:value="`${defaultValue}`"
 		/>
 		<div class="form-group row" v-else>
 			<label :for="name" class="col-sm-3 col-form-label">
@@ -31,7 +31,7 @@
 					type="text"
 					v-if="inputType === 'text'"
 					class="form-control"
-					:value="this.default"
+					:value="defaultValue"
 					:name="name"
 					:id="name"
 				/>
@@ -48,7 +48,7 @@
 						class="form-control"
 						:name="name"
 						:id="name"
-						:value="this.default"
+						:value="defaultValue"
 					/>
 					<div class="input-group-append" v-if="unit">
 						<span class="input-group-text">{{ unit }}</span>
@@ -61,42 +61,22 @@
 						class="form-control"
 						:name="name"
 						:id="name"
-						:value="this.default"
+						:value="defaultValue"
 					/>
 					<div class="input-group-append">
 						<span class="input-group-text">s</span>
 					</div>
 				</div>
-				<div
-					class="btn-group btn-group-toggle"
-					data-toggle="buttons"
-					style="display: block"
-					v-if="inputType === 'yes_no'"
-				>
-					<label
-						class="btn btn-outline-secondary"
-						:class="{ active: this.default === 'true' }"
-					>
-						<input
-							type="radio"
-							:name="name"
-							:id="name"
-							value="true"
-							:checked="this.default === 'true'"
-						/>
-						ja
-					</label>
-					<label
-						class="btn btn-outline-secondary"
-						:class="{ active: this.default !== 'true' }"
-					>
-						<input
-							type="radio"
-							value="false"
-							:name="name"
-							:checked="this.default !== 'true'"
-						/>
-						nein
+				<div class="my-2 custom-control custom-switch" v-if="inputType === 'yes_no'">
+					<input
+						type="checkbox"
+						class="custom-control-input"
+						:id="name"
+						:checked="defaultValue !== 'true'"
+					/>
+					<label class="custom-control-label" :for="name">
+						<span v-if="defaultValue !== 'true'">aktiv</span>
+						<span v-else>inaktiv</span>
 					</label>
 				</div>
 				<div v-if="inputType === 'plugin'">
@@ -106,14 +86,33 @@
 				</div>
 				<select v-if="inputType === 'select'" class="custom-select" :name="name" :id="name">
 					<option v-if="!required" value="">- bitte wählen -</option>
-					<option :key="value" :value="value" v-for="value in this.enum">
+					<option :key="value" :value="value" v-for="value in enumValues">
 						{{ value }}
 					</option>
 				</select>
+				<div v-if="inputType === 'inline_radio'" class="py-2">
+					<div
+						class="custom-control custom-radio custom-control-inline"
+						:key="value"
+						:value="value"
+						v-for="value in enumValues"
+					>
+						<input
+							type="radio"
+							:id="`${name}_${value}`"
+							:name="name"
+							class="custom-control-input"
+							:checked="defaultValue === value"
+						/>
+						<label class="custom-control-label" :for="`${name}_${value}`">
+							{{ value }}
+						</label>
+					</div>
+				</div>
 			</div>
 		</div>
 		<div
-			class="px-4 py-2 mb-2 subform"
+			class="px-4 pt-4 pb-2 mb-4 subform"
 			v-if="inputType === 'subform'"
 			v-show="subformEnabled || required"
 		>
@@ -146,9 +145,20 @@ export default {
 		return { subformEnabled: false };
 	},
 	computed: {
+		defaultValue: function () {
+			return this.default;
+		},
+		enumValues: function () {
+			return this.enum;
+		},
 		inputType: function () {
 			if (this.hidden) return "hidden";
-			if (this.enum) return "select";
+			if (this.enum) {
+				if (this.enum.length < 5 && this.enum.join("").length < 20) {
+					return "inline_radio";
+				}
+				return "select";
+			}
 			if (this.type === "password") return "password";
 			if (this.type === "struct") return "subform";
 			if (this.type === "duration") return "duration";
