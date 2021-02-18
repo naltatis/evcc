@@ -12,13 +12,19 @@
 				</select>
 			</div>
 		</div>
-		<FormField v-bind="formField" :key="formField.name" v-for="formField in formFields" />
+		<FormField
+			v-bind="formField"
+			:key="formField.name"
+			v-for="formField in formFields"
+			:plugin-types="pluginTypes"
+		/>
 		<div class="row">
 			<p class="offset-sm-3 col-sm-9">
 				<button
 					type="button"
 					class="btn btn-outline-secondary btn-sm"
 					@click="$emit('close')"
+					v-if="saveEndpoint"
 				>
 					abbrechen
 				</button>
@@ -37,6 +43,7 @@
 					type="submit"
 					name="btn-save"
 					class="btn btn-sm"
+					v-if="saveEndpoint"
 					:disabled="!testSuccess"
 					:class="{
 						'btn-outline-primary': !testSuccess,
@@ -86,6 +93,9 @@ export default {
 			type: Array,
 		},
 		meters: {
+			type: Array,
+		},
+		pluginTypes: {
 			type: Array,
 		},
 	},

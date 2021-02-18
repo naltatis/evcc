@@ -25,6 +25,7 @@
 				v-if="editMode === `charger_${index}`"
 				name="Hersteller"
 				:meters="chargerTypes"
+				:plugin-types="pluginTypes"
 				:save-endpoint="`/config/loadpoints/${index}/charger`"
 				test-endpoint="/config/test/charger"
 				@close="close"
@@ -48,6 +49,7 @@
 				v-if="editMode === `meter_${index}`"
 				name="Hersteller"
 				:meters="meterTypes"
+				:plugin-types="pluginTypes"
 				:save-endpoint="`/config/loadpoints/${index}/meter/charge`"
 				test-endpoint="/config/test/meter/charge"
 				@close="close"
@@ -70,6 +72,7 @@
 			<Form
 				v-if="editMode === `behaviour_${index}`"
 				:fields="behaviourFields"
+				:plugin-types="pluginTypes"
 				:save-endpoint="`/config/loadpoints/${index}`"
 				@close="close"
 			/>
@@ -100,6 +103,7 @@ export default {
 			meterTypes: [],
 			chargerTypes: [],
 			loadpointConfig: [[]],
+			pluginTyes: [],
 			loadpoints: [
 				{ name: "Carport", charger: { name: "NRGKick Connect" }, meter: {} },
 				{ name: "Garage", charger: { name: "KEBA X30" }, meter: {} },
@@ -111,6 +115,7 @@ export default {
 			this.meterTypes = (await axios.get("/config/types/meter/charge")).data;
 			this.chargerTypes = (await axios.get("/config/types/charger")).data;
 			this.loadpointConfig = (await axios.get("/config/loadpoints")).data;
+			this.pluginTypes = (await axios.get("/config/types/plugin")).data;
 		} catch (e) {
 			window.toasts.error(e);
 		}

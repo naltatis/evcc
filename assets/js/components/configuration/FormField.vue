@@ -42,6 +42,7 @@
 					:name="name"
 					:id="name"
 				/>
+				<div class="py-2" v-if="inputType === 'plugin'">Plugin</div>
 				<div class="input-group" v-if="inputType === 'number'" style="width: 50%">
 					<input
 						type="number"
@@ -79,11 +80,6 @@
 						<span v-else>inaktiv</span>
 					</label>
 				</div>
-				<div v-if="inputType === 'plugin'">
-					<button type="button" class="btn btn-outline-secondary">
-						Plugin konfigurieren
-					</button>
-				</div>
 				<select v-if="inputType === 'select'" class="custom-select" :name="name" :id="name">
 					<option v-if="!required" value="">- bitte wählen -</option>
 					<option :key="value" :value="value" v-for="value in enumValues">
@@ -111,6 +107,14 @@
 				</div>
 			</div>
 		</div>
+		<div class="px-4 pt-4 pb-2 mb-4 ml-4 border" v-if="inputType === 'plugin'">
+			<Form
+				name="Plugin"
+				:meters="pluginTypes"
+				:plugin-types="pluginTypes"
+				test-endpoint="/config/test/plugin"
+			/>
+		</div>
 		<div
 			class="px-4 pt-4 pb-2 mb-4 subform"
 			v-if="inputType === 'subform'"
@@ -119,6 +123,7 @@
 			<FormField
 				v-for="formField in this.children"
 				:key="formField.name"
+				:plugin-types="pluginTypes"
 				v-bind="formField"
 				:name="`${name}.${formField.name}`"
 			/>
@@ -129,6 +134,7 @@
 <script>
 export default {
 	name: "FormField",
+	components: { Form: () => import("./Form") },
 	props: {
 		name: String,
 		type: String,
@@ -137,6 +143,7 @@ export default {
 		masked: Boolean,
 		label: String,
 		unit: String,
+		pluginTypes: Array,
 		enum: Array,
 		children: Array,
 		default: [String, Number],

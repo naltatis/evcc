@@ -18,6 +18,7 @@
 				v-if="editMode === section.key"
 				name="Messgerät"
 				:meters="meters[section.key]"
+				:plugin-types="plugin"
 				:save-endpoint="`/config/meters/${section.key}`"
 				:test-endpoint="`/config/test/meter/${section.key}`"
 				@close="close"
@@ -37,6 +38,7 @@ export default {
 		return {
 			editMode: null,
 			meters: { grid: [], pv: [], battery: [] },
+			plugin: [],
 			sections: [
 				{ name: "Netzanschluss", key: "grid" },
 				{ name: "Erzeuger / Wechselrichter", key: "pv" },
@@ -57,6 +59,7 @@ export default {
 			this.meters.grid = (await axios.get("/config/types/meter/grid")).data;
 			this.meters.pv = (await axios.get("/config/types/meter/pv")).data;
 			this.meters.battery = (await axios.get("/config/types/meter/battery")).data;
+			this.plugin = (await axios.get("/config/types/plugin")).data;
 		} catch (e) {
 			window.toasts.error(e);
 		}

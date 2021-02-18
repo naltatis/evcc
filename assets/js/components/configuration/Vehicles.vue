@@ -21,6 +21,7 @@
 				<Form
 					name="Hersteller"
 					:meters="vehicleTypes"
+					:plugin-types="plugin"
 					:save-endpoint="`/config/vehicles/${index}`"
 					test-endpoint="/config/test/vehicle"
 					@close="close"
@@ -60,6 +61,7 @@ export default {
 	mounted: async function () {
 		try {
 			this.vehicleTypes = (await axios.get("/config/types/vehicle")).data;
+			this.plugin = (await axios.get("/config/types/plugin")).data;
 		} catch (e) {
 			window.toasts.error(e);
 		}
