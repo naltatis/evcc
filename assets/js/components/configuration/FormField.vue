@@ -42,7 +42,7 @@
 					:name="name"
 					:id="name"
 				/>
-				<div class="py-2" v-if="inputType === 'plugin'">Plugin</div>
+				<div class="py-2" v-if="inputType === 'plugin'">freie Konfiguration</div>
 				<div class="input-group" v-if="inputType === 'number'" style="width: 50%">
 					<input
 						type="number"
@@ -98,6 +98,7 @@
 							:id="`${name}_${value}`"
 							:name="name"
 							class="custom-control-input"
+							:value="value"
 							:checked="defaultValue === value"
 						/>
 						<label class="custom-control-label" :for="`${name}_${value}`">
@@ -107,9 +108,9 @@
 				</div>
 			</div>
 		</div>
-		<div class="px-4 pt-4 pb-2 mb-4 ml-4 border" v-if="inputType === 'plugin'">
+		<div class="px-4 pt-4 pb-2 mb-4 border" v-if="inputType === 'plugin'">
 			<Form
-				name="Plugin"
+				name="Protokoll"
 				:meters="pluginTypes"
 				:plugin-types="pluginTypes"
 				test-endpoint="/config/test/plugin"
