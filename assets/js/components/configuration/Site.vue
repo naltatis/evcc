@@ -29,6 +29,7 @@
 							class="dropdown-item"
 							type="button"
 							:key="template.label"
+							@click="selectTemplate(section.key, template)"
 							v-for="template in templates[section.key]"
 						>
 							{{ template.label }}
@@ -40,6 +41,7 @@
 				v-if="editMode === section.key"
 				name="Messgerät"
 				:meters="meters[section.key]"
+				v-model="value[section.key]"
 				:plugin-types="plugin"
 				:save-endpoint="`/config/meters/${section.key}`"
 				:test-endpoint="`/config/test/meter/${section.key}`"
@@ -61,6 +63,7 @@ export default {
 			editMode: null,
 			meters: { grid: [], pv: [], battery: [] },
 			templates: { grid: [], pv: [], battery: [] },
+			value: { grid: {}, pv: {}, battery: {} },
 			plugin: [],
 			sections: [
 				{ name: "Netzanschluss", key: "grid" },
@@ -75,6 +78,16 @@ export default {
 		},
 		close: function () {
 			this.editMode = null;
+		},
+		extractValues: function (fields) {
+			return fields.reduce((res, field) => {
+				const value = field.fields ? this.extractValues(field.fields) : field.default;
+				res[field.name] = value;
+				return res;
+			}, {});
+		},
+		selectTemplate: function (section, template) {
+			this.value[section] = this.extractValues(template.fields);
 		},
 	},
 	mounted: async function () {

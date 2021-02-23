@@ -18,6 +18,7 @@ const routes = [
   {
     path: "/setup",
     component: Setup,
+    redirect: "/setup/site",
     children: [
       { path: "site", component: SetupSite },
       { path: "vehicles", component: SetupVehicles },

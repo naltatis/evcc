@@ -5,7 +5,7 @@
 				{{ name }}
 			</label>
 			<div class="col-sm-9">
-				<select class="custom-select" id="wechselrichter" v-model="selectedMeter">
+				<select class="custom-select" id="wechselrichter" v-model="value.Type">
 					<option :value="meter.type" :key="meter.type" v-for="meter in meters">
 						{{ meter.label }}
 					</option>
@@ -14,22 +14,21 @@
 		</div>
 		<FormField
 			v-bind="formField"
+			:value="value[formField.name]"
 			:key="formField.name"
 			v-for="formField in formFields"
 			:plugin-types="pluginTypes"
 		/>
-		<div class="row">
-			<p class="offset-sm-3 col-sm-9">
-				<button
-					type="button"
-					class="btn btn-outline-secondary btn-sm"
-					@click="$emit('close')"
-					v-if="saveEndpoint"
-				>
-					abbrechen
-				</button>
-				&nbsp;
-				<button type="submit" name="btn-test" class="btn btn-outline-primary btn-sm">
+		<div
+			class="alert alert-success"
+			:class="{ 'alert-success': testSuccess, 'alert-danger': !testSuccess }"
+			v-if="testMessage"
+		>
+			{{ testMessage }}
+		</div>
+		<div class="d-flex justify-content-between flex-row-reverse">
+			<div>
+				<button type="submit" name="btn-test" class="btn btn-outline-primary">
 					testen
 					<span
 						class="spinner-border spinner-border-sm"
@@ -42,7 +41,7 @@
 				<button
 					type="submit"
 					name="btn-save"
-					class="btn btn-sm"
+					class="btn"
 					v-if="saveEndpoint"
 					:disabled="!testSuccess"
 					:class="{
@@ -52,14 +51,21 @@
 				>
 					speichern
 				</button>
-			</p>
+			</div>
+			<button
+				type="button"
+				class="btn btn-outline-secondary"
+				@click="$emit('close')"
+				v-if="saveEndpoint"
+			>
+				abbrechen
+			</button>
 		</div>
-		<p class="text-success" v-if="testMessage && testSuccess">✔ {{ testMessage }}</p>
-		<p class="text-danger" v-if="testMessage && !testSuccess">⚠️ {{ testMessage }}</p>
 	</form>
 </template>
 
 <script>
+/* eslint-disable vue/no-mutating-props */
 import FormField from "./FormField";
 import axios from "axios";
 import { unflatten } from "../../utils";
@@ -89,6 +95,10 @@ export default {
 		saveEndpoint: {
 			type: String,
 		},
+		value: {
+			type: Object,
+			default: () => ({}),
+		},
 		fields: {
 			type: Array,
 		},
@@ -104,7 +114,7 @@ export default {
 			if (this.fields) {
 				return this.fields;
 			}
-			const meter = this.meters.find((m) => m.type === this.selectedMeter);
+			const meter = this.meters.find((m) => m.type === this.value.Type);
 			return meter ? meter.fields : [];
 		},
 	},
@@ -113,7 +123,6 @@ export default {
 			const formData = new FormData(form);
 			var result = {};
 			formData.forEach((value, key) => (result[key] = value));
-			console.log(result, unflatten(result));
 			return unflatten(result);
 		},
 		submit: function (e) {

@@ -1,11 +1,6 @@
 <template>
 	<div>
-		<input
-			type="hidden"
-			v-if="inputType === 'hidden'"
-			:name="name"
-			:value="`${defaultValue}`"
-		/>
+		<input type="hidden" v-if="inputType === 'hidden'" :name="name" :value="`${value}`" />
 		<div class="form-group row" v-else>
 			<label :for="name" class="col-sm-3 col-form-label">
 				{{ label }}<small v-if="required">*</small>
@@ -31,7 +26,7 @@
 					type="text"
 					v-if="inputType === 'text'"
 					class="form-control"
-					:value="defaultValue"
+					:value="value"
 					:name="name"
 					:id="name"
 				/>
@@ -49,7 +44,7 @@
 						class="form-control"
 						:name="name"
 						:id="name"
-						:value="defaultValue"
+						:value="value"
 					/>
 					<div class="input-group-append" v-if="unit">
 						<span class="input-group-text">{{ unit }}</span>
@@ -62,7 +57,7 @@
 						class="form-control"
 						:name="name"
 						:id="name"
-						:value="defaultValue"
+						:value="value"
 					/>
 					<div class="input-group-append">
 						<span class="input-group-text">s</span>
@@ -73,10 +68,10 @@
 						type="checkbox"
 						class="custom-control-input"
 						:id="name"
-						:checked="defaultValue !== 'true'"
+						:checked="value !== 'true'"
 					/>
 					<label class="custom-control-label" :for="name">
-						<span v-if="defaultValue !== 'true'">aktiv</span>
+						<span v-if="value !== 'true'">aktiv</span>
 						<span v-else>inaktiv</span>
 					</label>
 				</div>
@@ -99,7 +94,7 @@
 							:name="name"
 							class="custom-control-input"
 							:value="value"
-							:checked="defaultValue === value"
+							:checked="value === value"
 						/>
 						<label class="custom-control-label" :for="`${name}_${value}`">
 							{{ value }}
@@ -113,6 +108,7 @@
 				name="Protokoll"
 				:meters="pluginTypes"
 				:plugin-types="pluginTypes"
+				:value="value"
 				test-endpoint="/config/test/plugin"
 			/>
 		</div>
@@ -124,7 +120,7 @@
 			<FormField
 				v-for="formField in this.children"
 				:key="formField.name"
-				:plugin-types="pluginTypes"
+				:plugin-value="value.Type"
 				v-bind="formField"
 				:name="`${name}.${formField.name}`"
 			/>
@@ -147,15 +143,12 @@ export default {
 		pluginTypes: Array,
 		enum: Array,
 		children: Array,
-		default: [String, Number],
+		value: [String, Object, Number, Boolean],
 	},
 	data: function () {
 		return { subformEnabled: false };
 	},
 	computed: {
-		defaultValue: function () {
-			return this.default;
-		},
 		enumValues: function () {
 			return this.enum;
 		},
