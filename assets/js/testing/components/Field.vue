@@ -72,6 +72,8 @@
 </template>
 
 <script>
+// import Configurable from "./Configurable";
+
 export default {
 	name: "Field",
 	components: { FieldSet: () => import("./FieldSet") },
@@ -119,6 +121,16 @@ export default {
 			switch (this.type) {
 				case "string":
 					return "text";
+				case ("int",
+				"int32",
+				"int64",
+				"uint",
+				"uint32",
+				"uint64",
+				"float32",
+				"float64",
+				"duration"):
+					return "number";
 				case "bool":
 					return "checkbox";
 				case "duration":
