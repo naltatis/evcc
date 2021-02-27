@@ -20,7 +20,7 @@ type Seat struct {
 }
 
 func init() {
-	registry.Add("Seat", NewSeatFromConfig)
+	registry.Add("seat", "Seat", NewSeatFromConfig, configDefaults())
 }
 
 // NewSeatFromConfig creates a new vehicle

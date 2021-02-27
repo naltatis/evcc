@@ -20,7 +20,7 @@ type Skoda struct {
 }
 
 func init() {
-	registry.Add("skoda", NewSkodaFromConfig)
+	registry.Add("skoda", "skoda", NewSkodaFromConfig, configDefaults())
 }
 
 // NewSkodaFromConfig creates a new vehicle
